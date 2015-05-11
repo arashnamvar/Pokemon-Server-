@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+    <script type ="text/javascript" src="/socket.io/socket.io.js"></script>
+    <link href='http://fonts.googleapis.com/css?family=Arvo' rel='stylesheet' type='text/css'>
+    <script type ="text/javascript">
+        $(document).ready(function (){ 
+
+	        var socket = io.connect();
+
+	        // socket.on('connect', function (data) {
+	        //   console.log('BROWSER::WE ARE USING SOCKETS!');
+	        // });
+
+			socket.on("image", function(info) {
+			  console.log("receiving in index");
+			  document.getElementById('imgid').src = 'data:image/jpeg;base64,' + info;
+			});
+		     socket.on('usercreated2client', function (data) {
+		     	users = data;
+		     	// console.log(users[0]);
+		     	draw();
+		     });
+
+// GAME --------------------------------------------------------------------
+
+		// Movement of user 
+			var users;
+			var CANVAS_WIDTH = 480;
+			var CANVAS_HEIGHT = 320;
+
+			Number.prototype.clamp = function(min, max) {
+			  return Math.min(Math.max(this, min), max);
+			};
+
+			var canvasElement = $("<canvas width='" + CANVAS_WIDTH + 
+			                      "' height='" + CANVAS_HEIGHT + "'></canvas>");
+			$(canvasElement).css('background-color', 'rgba(104, 229, 98, 1.0)');
+			var canvas = canvasElement.get(0).getContext("2d");
+			canvas.fillStyle = "#FF0000";
+			canvasElement.appendTo('body');
+
+			var FPS = 30;
+			setInterval(function() {
+			  draw();
+			}, 1000/FPS);
+
+			if (users.length > 1) {
+				draw();
+			}
+
+			function draw() {
+			  canvas.clearRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+			  for (var i = 0; i < users.length; i++) {
+			  	var img=new Image(); //creates a variable for a new image 
+			  	img.src= "http://rs95.pbsrc.com/albums/l124/GARNGAG/WAHOOOO.gif~c200"; // specifies the location of the image
+			  	canvas.drawImage(img,users[i].xcord,users[i].yxord,20,20); // draws the image at the specified x and y location
+			  }
+
+			}
+	
+        });
+    </script>
+    <style type="text/css">
+    	body {
+    		background-color: red;
+    	}
+    	h1 {
+    		font-family: 'Arvo', serif;
+    		color: white;
+    		text-shadow: 2px 2px black;
+    		text-align: center;
+    	}
+    	img {
+    		height: 100px;
+    		width: 100px;
+    		display: block;
+    		padding-left: 0;
+    	    padding-right: 0;
+    	    margin-left: auto;
+    	    margin-right: auto;
+    	    margin-bottom: 50px;
+    	    text-align: center;
+    	    line-height: 40px;
+    	    color: white;
+    	}
+    	canvas {
+    	    padding-left: 0;
+    	    padding-right: 0;
+    	    margin-left: auto;
+    	    margin-right: auto;
+    	    display: block;
+    	    width: 480px;
+    	}
+    </style>
+</head>
+<body>
+	<h1>Pokemon</h1>
+	<img id="imgid" src="" alt="Loading next trainer...">
+</body>
+</html>
